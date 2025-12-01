@@ -5,16 +5,16 @@
 
 <!-- SUMMARY_START -->
 **Current Focus (auto-maintained by Agent):**
-- Document baseline context and workflows for the MCP local kit.
-- Gather missing project facts (name, owner, stack) so PROJECT_CONTEXT can be populated.
-- Queue immediate tasks and deliverables once stakeholders provide inputs.
+- Polish the docs so the workflow is unmistakable.
+- Build an end-to-end example project walkthrough.
+- Trial the kit against one real codebase.
 <!-- SUMMARY_END -->
 
 ---
 
 ## Current Objective
 
-Establish actionable working context by gathering the actual project overview, stack, and near-term deliverables.
+Deliver a polished local-mcp-context-kit template that includes example usage and has been validated on a real repo.
 
 ---
 
@@ -26,20 +26,20 @@ Establish actionable working context by gathering the actual project overview, s
 
 ## What We Are Working On Right Now
 
-- [ ] Collect the authoritative project name, owner, and purpose for PROJECT_CONTEXT.md.
-- [ ] Define the real current objective and backlog for NOW.md.
-- [ ] Confirm next deliverables and workflows with stakeholders.
+- [ ] Tighten and proofread all docs (PROJECT_CONTEXT, NOW, SESSION_NOTES, supporting guides).
+- [ ] Create an example project walkthrough showing how agents update the memory files.
+- [ ] Run the workflow on a real codebase to confirm the process is solid.
 
 ---
 
 ## Next Small Deliverables
 
-- Document the project overview and core design pillars.
-- Draft the first concrete backlog or sprint scope.
-- Align the session ritual with the actual product team.
+- Updated docs folder with polished guidance and screenshots if needed.
+- Checked-in example project or scenario illustrating usage.
+- Report/findings from testing the kit on a live repo.
 
 ---
 
 ## Notes / Scratchpad
 
-- Session ended without new product work; awaiting stakeholder inputs to populate the templates.
+- Blocked on gathering any additional stakeholder requirements before publishing widely.

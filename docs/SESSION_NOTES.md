@@ -35,7 +35,26 @@
 ---
 
 ## Session Template (Copy/Paste for each new session)
-## Recent Sessions (last 3–5)
+## Recent Sessions (last 3-5)
+
+### 2025-12-01 (Session 2)
+
+**Participants:** User, Codex Agent  
+**Branch:** main  
+
+### What we worked on
+- Re-read PROJECT_CONTEXT, NOW, and SESSION_NOTES to prep session handoff.
+- Tightened the summaries in PROJECT_CONTEXT.md and NOW.md to mirror the current project definition.
+- Reconfirmed the immediate tasks: polish docs, add an example project, and test on a real repo.
+
+### Files touched
+- docs/PROJECT_CONTEXT.md
+- docs/NOW.md
+- docs/SESSION_NOTES.md
+
+### Outcomes / Decisions
+- Locked the near-term plan around doc polish, example walkthrough, and single-repo validation.
+- Still waiting on any additional stakeholder inputs before expanding scope.
 
 ### 2025-12-01
 
