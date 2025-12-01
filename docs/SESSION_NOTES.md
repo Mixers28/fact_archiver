@@ -9,7 +9,7 @@
 
 ### 2025-12-01
 
-**Participants:** Mix, VS Code Agent, Nova  
+**Participants:** User,VS Code Agent, Chatgpt   
 **Branch:** main  
 
 ### What we worked on
