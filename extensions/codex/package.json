@@ -36,6 +36,11 @@
           "id": "codexHandoffView",
           "name": "Quick Handoff",
           "type": "tree"
+        },
+        {
+          "id": "codexWorkflowStatusView",
+          "name": "Workflow Status",
+          "type": "tree"
         }
       ]
     },
@@ -74,6 +79,7 @@
     ],
     "commands": [
       { "command": "codex.handoff", "title": "Codex: Hand off task" },
+      { "command": "codex.runFullWorkflow", "title": "Codex: Run Full Workflow", "icon": "$(play)" },
       { "command": "codex.handoffToArchitect", "title": "Hand off to Architect", "icon": "$(symbol-class)" },
       { "command": "codex.handoffToCoder", "title": "Hand off to Coder", "icon": "$(code)" },
       { "command": "codex.handoffToReviewer", "title": "Hand off to Reviewer", "icon": "$(check)" },
@@ -82,6 +88,11 @@
     ],
     "menus": {
       "view/title": [
+        {
+          "command": "codex.runFullWorkflow",
+          "when": "view == codexHandoffView",
+          "group": "navigation"
+        },
         {
           "command": "codex.refreshHandoff",
           "when": "view == codexHandoffView",

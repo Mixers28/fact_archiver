@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 const vscode = __importStar(require("vscode"));
 const path_1 = require("path");
+const WorkflowOrchestrator_1 = require("./orchestrator/WorkflowOrchestrator");
 // Constants
 const FRONTMATTER_DELIMITER = '---';
 const INSTRUCTION_SEPARATOR = '\n\n---\n\n';
@@ -87,11 +88,41 @@ class HandoffTreeProvider {
         return Promise.resolve(this.handoffItems);
     }
 }
+class WorkflowStatusItem extends vscode.TreeItem {
+    constructor(status) {
+        super(status.label, vscode.TreeItemCollapsibleState.None);
+        this.status = status;
+        this.description = status.state;
+        this.iconPath = iconForState(status.state);
+    }
+}
+class WorkflowStatusProvider {
+    constructor(statuses) {
+        this.statuses = statuses;
+        this._onDidChangeTreeData = new vscode.EventEmitter();
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+    }
+    setStatuses(statuses) {
+        this.statuses = statuses;
+        this._onDidChangeTreeData.fire();
+    }
+    getTreeItem(element) {
+        return element;
+    }
+    getChildren(_element) {
+        return Promise.resolve(this.statuses.map(status => new WorkflowStatusItem(status)));
+    }
+}
 function activate(ctx) {
     // Register the TreeDataProvider
     const handoffProvider = new HandoffTreeProvider();
     const treeView = vscode.window.createTreeView('codexHandoffView', {
         treeDataProvider: handoffProvider,
+        showCollapseAll: false
+    });
+    const workflowStatusProvider = new WorkflowStatusProvider(buildPendingStatuses());
+    const workflowStatusView = vscode.window.createTreeView('codexWorkflowStatusView', {
+        treeDataProvider: workflowStatusProvider,
         showCollapseAll: false
     });
     // Refresh command
@@ -111,6 +142,7 @@ function activate(ctx) {
     const handoffToQA = vscode.commands.registerCommand('codex.handoffToQA', async () => {
         await handoffToParticipant('mix.qa', 'QA');
     });
+    const orchestrator = new WorkflowOrchestrator_1.WorkflowOrchestrator([...AGENTS], getAgentInstructions);
     // Helper function to read agent instructions from .agent.md files
     async function getAgentInstructions(participantName) {
         try {
@@ -190,36 +222,50 @@ function activate(ctx) {
         }
     }
     // Codex (coordinator)
-    const codex = vscode.chat.createChatParticipant("mix.codex", async (req, chatCtx, stream, token) => {
-        // Do your normal “coordinator” reasoning/output
-        stream.markdown(`Plan drafted. Choose a handoff:\n`);
-        // Return metadata so followupProvider can reuse the same base prompt
-        return { metadata: { basePrompt: req.prompt } };
+    const codex = vscode.chat.createChatParticipant("mix.codex", async (req, _chatCtx, stream, token) => {
+        stream.markdown(`Starting orchestrated workflow...\n`);
+        workflowStatusProvider.setStatuses(buildPendingStatuses());
+        let latestStatuses = buildPendingStatuses();
+        const workflowResults = await orchestrator.runWorkflow(req.prompt, {
+            token,
+            onUpdate: statuses => {
+                latestStatuses = statuses;
+                workflowStatusProvider.setStatuses(statuses);
+            }
+        });
+        if (token?.isCancellationRequested && workflowResults.length === 0) {
+            stream.markdown("Workflow cancelled before preparing any handoffs.");
+            return { metadata: { workflowResults, basePrompt: req.prompt, statuses: latestStatuses } };
+        }
+        if (token?.isCancellationRequested) {
+            stream.markdown("Workflow cancelled. Prepared prompts so far:\n");
+        }
+        workflowResults.forEach(result => {
+            stream.markdown(formatAgentSection(result));
+        });
+        if (workflowResults.length > 0) {
+            stream.markdown(formatWorkflowSummary(workflowResults, latestStatuses));
+        }
+        return { metadata: { workflowResults, basePrompt: req.prompt, statuses: latestStatuses } };
     });
     codex.followupProvider = {
         provideFollowups(result, _context, _token) {
+            const workflowResults = result.metadata?.workflowResults;
             const base = result.metadata?.basePrompt ?? "";
+            if (workflowResults?.length) {
+                return workflowResults.map(r => ({
+                    label: `Run ${r.label}`,
+                    participant: r.agentId,
+                    prompt: r.prompt
+                }));
+            }
+            if (!base)
+                return [];
             return [
-                {
-                    label: "Hand off → Architect",
-                    participant: "mix.architect",
-                    prompt: `Turn this into a spec + acceptance criteria:\n\n${base}`
-                },
-                {
-                    label: "Hand off → Coder",
-                    participant: "mix.coder",
-                    prompt: `Implement this. Include files + steps:\n\n${base}`
-                },
-                {
-                    label: "Hand off → Reviewer",
-                    participant: "mix.reviewer",
-                    prompt: `Review the implementation approach for risks + test gaps:\n\n${base}`
-                },
-                {
-                    label: "Hand off → QA",
-                    participant: "mix.qa",
-                    prompt: `Write a focused test plan + edge cases:\n\n${base}`
-                }
+                { label: "Hand off → Architect", participant: "mix.architect", prompt: base },
+                { label: "Hand off → Coder", participant: "mix.coder", prompt: base },
+                { label: "Hand off → Reviewer", participant: "mix.reviewer", prompt: base },
+                { label: "Hand off → QA", participant: "mix.qa", prompt: base }
             ];
         }
     };
@@ -234,7 +280,7 @@ function activate(ctx) {
             return;
         await handoffToParticipant(pick.id, pick.label);
     });
-    ctx.subscriptions.push(treeView, refreshCommand, handoffToArchitect, handoffToCoder, handoffToReviewer, handoffToQA, codex, architect, coder, reviewer, qa, handoffCommand);
+    ctx.subscriptions.push(treeView, workflowStatusView, refreshCommand, handoffToArchitect, handoffToCoder, handoffToReviewer, handoffToQA, codex, architect, coder, reviewer, qa, handoffCommand);
 }
 function createParticipant(id, label, getInstructions) {
     return vscode.chat.createChatParticipant(id, async (req, _chatCtx, stream, _token) => {
@@ -246,5 +292,35 @@ function createParticipant(id, label, getInstructions) {
         stream.markdown(`${label} received the request:\n\n${req.prompt}`);
         return { metadata: { basePrompt: req.prompt } };
     });
+}
+function buildPendingStatuses() {
+    return AGENTS.map(agent => ({
+        agentId: agent.id,
+        label: agent.label,
+        state: "pending"
+    }));
+}
+function iconForState(state) {
+    if (state === "running")
+        return new vscode.ThemeIcon("sync~spin");
+    if (state === "done")
+        return new vscode.ThemeIcon("check");
+    if (state === "cancelled")
+        return new vscode.ThemeIcon("circle-slash");
+    return new vscode.ThemeIcon("clock");
+}
+function formatAgentSection(result) {
+    const lines = [
+        `### ${result.label}`,
+        `@${result.agentId}`,
+        "",
+        result.prompt
+    ];
+    return lines.join("\n");
+}
+function formatWorkflowSummary(results, statuses) {
+    const statusLines = statuses.map(s => `- ${s.label}: ${s.state}`);
+    const summary = results.map(r => `- ${r.label}: handoff prompt prepared`).join("\n");
+    return ["---", "Workflow status", ...statusLines, "", "Prepared prompts", summary].join("\n");
 }
 //# sourceMappingURL=extension.js.map
