@@ -5,16 +5,16 @@
 
 <!-- SUMMARY_START -->
 **Current Focus (auto-maintained by Agent):**
-- Keep docs aligned to the handoffkit CLI workflow and SPEC.md authority.
-- Validate the session start/end flow with the new agent prompts.
-- Remove leftover extension artifacts and keep repo structure clean.
+- Align project memory with the Evidence Ledger V1 spec and define near-term build steps.
+- Choose baseline tech stack and draft the core data model for SourceItems, Artifacts, Events, Claims, and Assessments.
+- Outline the MVP flow: ingestion → capture → processing → reviewer/public UI.
 <!-- SUMMARY_END -->
 
 ---
 
 ## Current Objective
 
-Deliver a coherent handoffkit CLI workflow template with accurate docs and SPEC.md as the source of truth.
+Translate the V1 spec into an executable MVP plan and initial implementation scaffolding.
 
 ---
 
@@ -26,19 +26,30 @@ Deliver a coherent handoffkit CLI workflow template with accurate docs and SPEC.
 
 ## What We Are Working On Right Now
 
-- [x] Replace MCP framing in docs with the persistent agent workflow source of truth.
-- [x] Remove extension artifacts and legacy scripts.
-- [ ] Verify session flow with the new CLI and role prompts.
+- [ ] Confirm stack choices (backend language, queue, capture tooling, frontend).
+- [ ] Draft DB schema for SourceItem, Artifact, Event, Claim, ClaimAssertion, Assessment, TransparencyLogEntry.
+- [ ] Define ingestion inputs (RSS + curated URL lists) and capture tier policy.
+- [ ] Sketch UI flows for Calendar, Daily Ledger, Event page, Review Queue.
+- [ ] Plan transparency log generation + verification page.
 
 ---
 
 ## Next Small Deliverables
 
-- A clear usage section for selecting and handing off to agents.
-- A quick validation note or checklist for CLI behavior.
+- Core schema draft and terminology alignment with Spec.md.
+- MVP architecture outline and component responsibilities.
+- UI wire-level flow for daily review + event pages.
+
+---
+
+## Drift Guards (keep NOW fresh)
+
+- Keep NOW to 5–12 active tasks; remove completed items.
+- Refresh summary blocks every session.
+- Move stable decisions into PROJECT_CONTEXT.
 
 ---
 
 ## Notes / Scratchpad
 
-- MCP terminology is deprecated; the new design doc is `docs/PERSISTENT_AGENT_WORKFLOW.md`.
+- If NOW grows, move details into SESSION_NOTES and roll up key points.

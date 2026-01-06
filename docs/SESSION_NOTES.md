@@ -3,6 +3,21 @@
 > Rolling log of what happened in each focused work session.  
 > Append-only. Do not delete past sessions.
 
+<!-- SUMMARY_START -->
+**Latest Summary (auto-maintained by Agent):**
+- Reviewed Evidence Ledger V1 spec and aligned project memory to the new scope.
+- Updated PROJECT_CONTEXT and NOW to reflect architecture, MVP flow, and near-term tasks.
+- Next step is choosing stack specifics and drafting the core schema.
+<!-- SUMMARY_END -->
+
+---
+
+## Maintenance Rules (reduce drift)
+
+- Append-only entries; never rewrite history.
+- Update this summary block every session with the last 1–3 sessions.
+- Roll up stable decisions to PROJECT_CONTEXT and active tasks to NOW.
+
 ---
 
 ## Example Entry
@@ -36,6 +51,23 @@
 
 ## Session Template (Copy/Paste for each new session)
 ## Recent Sessions (last 3-5)
+
+### 2026-01-06
+
+**Participants:** User, Codex Agent  
+**Branch:** main  
+
+### What we worked on
+- Reviewed docs/Spec.md (Evidence Ledger V1 scope and architecture).
+- Updated project memory docs to match the Evidence Ledger direction.
+
+### Files touched
+- docs/PROJECT_CONTEXT.md
+- docs/NOW.md
+- docs/SESSION_NOTES.md
+
+### Outcomes / Decisions
+- Adopted Evidence Ledger V1 spec as the baseline scope for ongoing work.
 
 ### 2025-12-01 (Session 2)
 

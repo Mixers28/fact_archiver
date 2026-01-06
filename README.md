@@ -1,104 +1,40 @@
-# Universal Handoff Kit (Local MCP compatible)
+# Fact Archiver (Evidence Ledger)
 
-A tiny **prompt compiler** you can use with *any chat window / any LLM* (Codex, Claude, ChatGPT, etc.).
-It builds a **token-budgeted Context Pack** from your repo’s memory files and prints a **role handoff prompt** you copy/paste.
+A daily, calendar-based evidence ledger that captures who said what, when, preserves proof artifacts, and tracks claim status over time with an append-only history.
 
-This version is adapted to your **local-mcp-context-kit** layout:
-- Reads: `docs/PROJECT_CONTEXT.md`, `docs/NOW.md`, `docs/SESSION_NOTES.md`
-- Includes: `docs/AGENT_SESSION_PROTOCOL.md` (excerpt)
-- If present, uses your repo role prompts: `.github/agents/*.agent.md`
-- Can be run from anywhere inside the repo (auto-finds project root)
+## V1 Scope
 
-## Install
+- Ingest curated sources (RSS + URL lists).
+- Tiered capture: screenshots/PDF + extracted text for most; selective WARC/WACZ for high-importance items.
+- Claim extraction and status scoring with transparent rationales.
+- Event clustering and timeline views.
+- Append-only transparency log with verifiable hashes.
 
-### Option A (recommended, venv)
-From the repo root:
+## Repo Layout
 
+- `docs/Spec.md` — Canonical product spec.
+- `docs/PROJECT_CONTEXT.md` — Long-term memory and decisions.
+- `docs/NOW.md` — Current focus and near-term tasks.
+- `docs/SESSION_NOTES.md` — Session log (append-only).
+
+## Git Intro (this repo)
+
+First-time setup:
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
+git clone https://github.com/Mixers28/fact_archiver.git
+cd fact_archiver
 ```
 
-This exposes a `handoffkit` CLI (you can also use `python -m handoffkit`).
-
-### Option B (no install)
-Run directly from the repo root:
-
+Common workflow:
 ```bash
-python -m handoffkit --help
+git checkout -b feature/your-change
+git status -sb
+git add .
+git commit -m "Describe the change"
+git push -u origin feature/your-change
 ```
 
-If you see `externally-managed-environment`, use a venv or install via `pipx`.
-
-## Usage
-
-Run from *any* directory; just point `--root` somewhere inside the repo (or omit it if you’re already inside).
-If you didn’t install, replace `handoffkit` with `python -m handoffkit`.
-
-### Architect
+Push the main branch (if you work directly on `main`):
 ```bash
-handoffkit architect "Turn my idea into SPEC.md + phases/sprints" --root .
+git push -u origin main
 ```
-
-### Coder
-```bash
-handoffkit coder "Implement Sprint 1 from SPEC.md" --root .
-```
-
-### Reviewer (diff file)
-```bash
-git diff > patch.diff
-handoffkit reviewer "Review this patch vs SPEC.md and best practices" --root . --diff patch.diff
-```
-
-### Reviewer (pipe diff from stdin)
-```bash
-git diff | handoffkit reviewer "Review this patch vs SPEC.md and best practices" --root . --diff -
-```
-
-### QA/Tester
-```bash
-handoffkit qa_tester "Write a lightweight test plan + edge cases" --root .
-```
-
-### Polish
-```bash
-handoffkit polish "One-pass polish for clarity/consistency" --root .
-```
-
-## Session Flow
-
-### Start Session
-```bash
-handoffkit session start --agent-role Coder --open-docs
-```
-
-### End Session (writeback + commit)
-```bash
-handoffkit session end --commit
-```
-
-## Config (optional)
-
-If no config is found, defaults are aligned to local-mcp-context-kit.
-
-Example `handoffkit.config.json`:
-
-```json
-{
-  "token_budget": 2200,
-  "baseline_files": ["docs/PROJECT_CONTEXT.md", "docs/NOW.md"],
-  "session_notes_file": "docs/SESSION_NOTES.md",
-  "session_notes_tail_lines": 80,
-  "protocol_file": "docs/AGENT_SESSION_PROTOCOL.md",
-  "protocol_tail_lines": 120
-}
-```
-
-## Notes
-
-- For best token efficiency, add summary blocks to your memory files:
-  - `<!-- SUMMARY_START --> ... <!-- SUMMARY_END -->`
-- The output ends with **SESSION END – INSTRUCTIONS** telling the agent to include “Session Updates”
-  so you can easily update `NOW.md` and `SESSION_NOTES.md` per your protocol.
