@@ -64,7 +64,7 @@ def main() -> None:
             if membership is None:
                 continue
             source_item = db.get(SourceItem, row.source_item_id)
-            if source_item is None:
+            if source_item is None or source_item.is_filtered:
                 continue
 
             extracted = extract_claims(row.normalized_text)

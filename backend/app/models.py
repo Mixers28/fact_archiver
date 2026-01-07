@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
@@ -23,6 +23,8 @@ class SourceItem(Base):
     language = Column(String(32), nullable=True)
     capture_tier = Column(Integer, nullable=False, default=1)
     capture_status = Column(String(64), nullable=True)
+    is_significant = Column(Boolean, nullable=True)
+    is_filtered = Column(Boolean, nullable=False, default=False)
 
     artifacts = relationship("Artifact", back_populates="source_item")
 

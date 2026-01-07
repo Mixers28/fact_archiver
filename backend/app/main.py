@@ -107,7 +107,10 @@ def get_days(start: str | None = None, end: str | None = None, db: Session = Dep
         raise HTTPException(status_code=400, detail="end must be >= start")
     rows = (
         db.execute(
-            select(Event.date_key, func.count(Event.id))
+            select(Event.date_key, func.count(func.distinct(Event.id)))
+            .join(EventMembership, EventMembership.event_id == Event.id)
+            .join(SourceItem, SourceItem.id == EventMembership.source_item_id)
+            .where(SourceItem.is_filtered.is_(False))
             .where(Event.date_key >= start, Event.date_key <= end)
             .group_by(Event.date_key)
             .order_by(Event.date_key)
@@ -128,7 +131,15 @@ def get_days(start: str | None = None, end: str | None = None, db: Session = Dep
 def get_day(date_key: str, db: Session = Depends(get_db)):
     _parse_date(date_key)
     events = (
-        db.execute(select(Event).where(Event.date_key == date_key).order_by(Event.created_at.desc()))
+        db.execute(
+            select(Event)
+            .join(EventMembership, EventMembership.event_id == Event.id)
+            .join(SourceItem, SourceItem.id == EventMembership.source_item_id)
+            .where(Event.date_key == date_key)
+            .where(SourceItem.is_filtered.is_(False))
+            .distinct()
+            .order_by(Event.created_at.desc())
+        )
         .scalars()
         .all()
     )
@@ -184,6 +195,7 @@ def get_event(event_id: str, db: Session = Depends(get_db)):
             select(SourceItem)
             .join(EventMembership, EventMembership.source_item_id == SourceItem.id)
             .where(EventMembership.event_id == event.id)
+            .where(SourceItem.is_filtered.is_(False))
         )
         .scalars()
         .all()

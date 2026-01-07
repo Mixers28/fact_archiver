@@ -30,6 +30,10 @@ def write_text(path: str, text: str) -> tuple[int, str]:
     return write_bytes(path, data)
 
 
+def write_text_bytes(path: str, data: bytes) -> tuple[int, str]:
+    return write_bytes(path, data)
+
+
 def date_key_for(dt: datetime | None) -> str:
     if dt is None:
         return datetime.utcnow().strftime("%Y-%m-%d")

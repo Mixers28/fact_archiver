@@ -83,7 +83,11 @@ def cluster_source_items(db: Session, items: Iterable[SourceItem]) -> int:
 def list_unclustered_items(db: Session) -> list[SourceItem]:
     subquery = select(EventMembership.source_item_id)
     return (
-        db.execute(select(SourceItem).where(~SourceItem.id.in_(subquery)))
+        db.execute(
+            select(SourceItem)
+            .where(~SourceItem.id.in_(subquery))
+            .where(SourceItem.is_filtered.is_(False))
+        )
         .scalars()
         .all()
     )

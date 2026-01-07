@@ -21,3 +21,4 @@ Desktop.ini
 backend/artifacts/
 backend/.venv/
 frontend/node_modules/
+frontend/.next/

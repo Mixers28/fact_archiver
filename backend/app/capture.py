@@ -3,12 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 
 from playwright.sync_api import sync_playwright
+import requests
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal, init_engine
 from app.models import Artifact, SourceItem
 from app.settings import get_capture_timeout_ms
-from app.storage import build_artifact_path, date_key_for, write_bytes, write_text
+from app.storage import build_artifact_path, date_key_for, write_bytes, write_text, write_text_bytes
 
 
 def capture_source_item(db: Session, source_item_id: str) -> int:
@@ -85,6 +86,48 @@ def capture_source_item(db: Session, source_item_id: str) -> int:
     source_item.capture_status = "captured"
     db.commit()
     return created
+
+
+def capture_text_only(db: Session, source_item_id: str) -> int:
+    source_item = db.get(SourceItem, source_item_id)
+    if source_item is None:
+        raise ValueError(f"source_item not found: {source_item_id}")
+
+    source_item.capture_status = "capturing"
+    db.commit()
+
+    response = requests.get(source_item.url, timeout=20)
+    response.raise_for_status()
+
+    date_key = date_key_for(source_item.published_at or datetime.utcnow())
+    html_path = build_artifact_path(
+        date_key, source_item.publisher, str(source_item.id), "html", "html"
+    )
+    size, sha256 = write_text_bytes(html_path, response.content)
+    db.add(
+        Artifact(
+            source_item_id=source_item.id,
+            type="html",
+            storage_uri=html_path,
+            bytes=size,
+            sha256=sha256,
+            tool_version="requests",
+        )
+    )
+
+    source_item.capture_status = "captured"
+    db.commit()
+    return 1
+
+
+def capture_text_only_job(source_item_id: str) -> int:
+    engine = init_engine()
+    db = SessionLocal()
+    try:
+        return capture_text_only(db, source_item_id)
+    finally:
+        db.close()
+        engine.dispose()
 
 
 def capture_source_item_job(source_item_id: str) -> int:

@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import SourceItem
+from app.significance import is_significant
 
 
 @dataclass
@@ -61,6 +62,8 @@ def ingest_urls(db: Session, urls: Iterable[str]) -> IngestResult:
                 discovered_at=datetime.utcnow(),
                 capture_tier=1,
                 capture_status="pending",
+                is_significant=True,
+                is_filtered=False,
             )
         )
         created += 1
@@ -82,6 +85,16 @@ def ingest_rss(db: Session, feed_urls: Iterable[str]) -> IngestResult:
             url = getattr(entry, "link", None)
             if not url:
                 continue
+            categories = [
+                str(tag.get("term", "")).strip()
+                for tag in getattr(entry, "tags", []) or []
+                if isinstance(tag, dict)
+            ]
+            title = getattr(entry, "title", "") or ""
+            summary = getattr(entry, "summary", "") or getattr(entry, "description", "") or ""
+            if not is_significant(categories, title, summary):
+                skipped += 1
+                continue
             if _source_item_exists(db, url):
                 skipped += 1
                 continue
@@ -96,6 +109,8 @@ def ingest_rss(db: Session, feed_urls: Iterable[str]) -> IngestResult:
                     discovered_at=datetime.utcnow(),
                     capture_tier=1,
                     capture_status="pending",
+                    is_significant=True,
+                    is_filtered=False,
                 )
             )
             created += 1
