@@ -17,6 +17,26 @@ A daily, calendar-based evidence ledger that captures who said what, when, prese
 - `docs/NOW.md` — Current focus and near-term tasks.
 - `docs/SESSION_NOTES.md` — Session log (append-only).
 
+## Deployment Notes
+
+Backend (Railway):
+- Root directory: `backend`
+- Start command: `sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"`
+- Env vars:
+  - `DATABASE_URL` (Railway Postgres internal URL)
+  - `CORS_ORIGINS` (comma-separated frontend origins)
+  - `NIXPACKS_PYTHON_VERSION=3.12`
+
+Frontend (Vercel):
+- Root directory: `frontend`
+- Env vars:
+  - `NEXT_PUBLIC_API_BASE_URL=https://<your-backend-host>`
+
+Database migrations:
+```bash
+alembic upgrade head
+```
+
 ## Git Intro (this repo)
 
 First-time setup:
