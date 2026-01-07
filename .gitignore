@@ -6,6 +6,7 @@ npm-debug.log*
 __pycache__/
 *.pyc
 *.egg-info/
+.venv/
 
 # OS junk
 .DS_Store
@@ -15,3 +16,8 @@ Desktop.ini
 # Editor junk
 .vscode/
 !.vscode/tasks.json
+
+# Local artifacts
+backend/artifacts/
+backend/.venv/
+frontend/node_modules/
