@@ -9,7 +9,7 @@ export default async function DayPage({ params }: { params: { date: string } }) 
       <section className="hero">
         <span className="pill">Daily Ledger</span>
         <h1>{day.date}</h1>
-        <p>Events, claims, and review queue for this day.</p>
+        <p>Key events captured for the day and items awaiting assessment.</p>
       </section>
 
       <div className="grid cols-2">
@@ -24,7 +24,9 @@ export default async function DayPage({ params }: { params: { date: string } }) 
                 </div>
               </Link>
             ))}
-            {day.events.length === 0 && <div>No events yet.</div>}
+            {day.events.length === 0 && (
+              <div className="meta">No events yet. Ingest feeds to populate this day.</div>
+            )}
           </div>
         </div>
         <div className="card">
@@ -33,15 +35,20 @@ export default async function DayPage({ params }: { params: { date: string } }) 
             {day.review_queue.map((claim) => (
               <div key={claim.claim_id}>
                 <div>{claim.normalized_text}</div>
-                <small>
-                  Status: {claim.status} · Score: {claim.score ?? "n/a"}
-                </small>
+                <div className="meta">
+                  <span className={`status-badge ${claim.status.toLowerCase()}`}>
+                    {claim.status}
+                  </span>
+                  {claim.score !== null ? ` · Score ${claim.score}` : " · Score n/a"}
+                </div>
               </div>
             ))}
-            {day.review_queue.length === 0 && <div>Nothing in the queue.</div>}
+            {day.review_queue.length === 0 && (
+              <div className="meta">Nothing in the queue for this day.</div>
+            )}
           </div>
           <Link className="button secondary" href="/review">
-            Open Review Queue
+            Review Queue
           </Link>
         </div>
       </div>

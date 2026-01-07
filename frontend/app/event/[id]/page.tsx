@@ -15,13 +15,19 @@ export default async function EventPage({ params }: { params: { id: string } }) 
       <div className="grid cols-2">
         <div className="card">
           <h3>Sources</h3>
+          <p className="meta">{event.sources.length} captured sources</p>
           <div className="list">
             {event.sources.map((source) => (
               <a key={source.id} href={source.url} target="_blank" rel="noreferrer">
-                {source.publisher || "Unknown"} · {source.published_at || "n/a"}
+                <div>
+                  <strong>{source.publisher || "Unknown"}</strong>
+                  <div className="meta">{source.published_at || "Published date n/a"}</div>
+                </div>
               </a>
             ))}
-            {event.sources.length === 0 && <div>No sources yet.</div>}
+            {event.sources.length === 0 && (
+              <div className="meta">No sources yet. Capture artifacts to populate.</div>
+            )}
           </div>
         </div>
         <div className="card">
@@ -29,7 +35,10 @@ export default async function EventPage({ params }: { params: { id: string } }) 
           <div className="list">
             {Object.entries(event.claims_by_status).map(([status, claims]) => (
               <div key={status}>
-                <strong>{status}</strong>
+                <div className="meta">
+                  <span className={`status-badge ${status.toLowerCase()}`}>{status}</span>
+                  <span> · {claims.length} claims</span>
+                </div>
                 <div>
                   {claims.map((claim) => (
                     <div key={claim.id}>

@@ -12,7 +12,7 @@ export default async function ReviewPage() {
       <section className="hero">
         <span className="pill">Reviewer</span>
         <h1>Review Queue</h1>
-        <p>Override claim statuses and add rationale.</p>
+        <p>Override claim statuses and add rationale for high-impact items.</p>
       </section>
       <ReviewClient
         items={day.review_queue.map((item) => ({

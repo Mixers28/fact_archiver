@@ -15,6 +15,7 @@ export function ReviewClient({ items }: { items: ReviewItem[] }) {
   const [rationale, setRationale] = useState("");
   const [active, setActive] = useState<ReviewItem | null>(items[0] || null);
   const [message, setMessage] = useState("");
+  const total = items.length;
 
   async function handleSubmit() {
     if (!active) {
@@ -32,19 +33,25 @@ export function ReviewClient({ items }: { items: ReviewItem[] }) {
     <div className="grid cols-2">
       <div className="card">
         <h3>Queue</h3>
+        <p className="meta">{total} items awaiting review</p>
         <div className="list">
-          {items.map((item) => (
-            <button
-              key={item.claim_id}
-              className="button secondary"
-              onClick={() => {
-                setActive(item);
-                setMessage("");
-              }}
-            >
-              {item.normalized_text.slice(0, 64)}
-            </button>
-          ))}
+          {items.map((item) => {
+            const isActive = active?.claim_id === item.claim_id;
+            return (
+              <button
+                key={item.claim_id}
+                className={`button secondary${isActive ? " active" : ""}`}
+                onClick={() => {
+                  setActive(item);
+                  setMessage("");
+                }}
+                aria-label={`Review claim ${item.normalized_text}`}
+              >
+                {item.normalized_text.slice(0, 64)}
+              </button>
+            );
+          })}
+          {items.length === 0 && <p className="meta">No items in the queue.</p>}
         </div>
       </div>
       <div className="card">
@@ -52,6 +59,9 @@ export function ReviewClient({ items }: { items: ReviewItem[] }) {
         {active ? (
           <>
             <p>{active.normalized_text}</p>
+            <p className="meta">
+              Selected {items.findIndex((item) => item.claim_id === active.claim_id) + 1} of {total}
+            </p>
             <div className="field">
               <label>Status</label>
               <select value={status} onChange={(event) => setStatus(event.target.value)}>
@@ -76,7 +86,7 @@ export function ReviewClient({ items }: { items: ReviewItem[] }) {
             {message && <p>{message}</p>}
           </>
         ) : (
-          <p>No claim selected.</p>
+          <p className="meta">No claim selected.</p>
         )}
       </div>
     </div>

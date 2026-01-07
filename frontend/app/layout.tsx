@@ -13,7 +13,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={space.className}>
       <body>
-        <div className="app">{children}</div>
+        <div className="app">
+          <header className="site-header">
+            <div className="brand">
+              <span className="brand-dot" />
+              <div>
+                <strong>Fact Archiver</strong>
+                <span>Evidence Ledger</span>
+              </div>
+            </div>
+            <nav className="nav">
+              <a href="/">Home</a>
+              <a href="/review">Review Queue</a>
+              <a href="/verification">Verification</a>
+            </nav>
+          </header>
+          <main className="main">{children}</main>
+        </div>
       </body>
     </html>
   );
