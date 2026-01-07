@@ -10,6 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+  const verificationHref = apiBase
+    ? `${apiBase.replace(/\/$/, "")}/verification`
+    : "/verification";
+
   return (
     <html lang="en" className={space.className}>
       <body>
@@ -25,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className="nav">
               <a href="/">Home</a>
               <a href="/review">Review Queue</a>
-              <a href="/verification">Verification</a>
+              <a href={verificationHref}>Verification</a>
             </nav>
           </header>
           <main className="main">{children}</main>
