@@ -1,3 +1,43 @@
 # One RSS/Atom feed URL per line. Lines starting with # are ignored.
-# Example:
-# https://example.com/rss
+
+# UK / English (news + official)
+https://feeds.bbci.co.uk/news/rss.xml
+https://feeds.bbci.co.uk/news/uk/rss.xml
+https://www.theguardian.com/uk/rss
+https://www.ft.com/?format=rss
+https://feeds.skynews.com/feeds/rss/home.xml
+https://www.gov.uk/search/news-and-communications.atom?content_store_document_type=press_release
+https://ec.europa.eu/commission/presscorner/api/rss?language=en
+
+# France (French)
+https://www.lemonde.fr/rss/une.xml
+https://www.lefigaro.fr/rss/figaro_actualites.xml
+https://www.france24.com/fr/rss
+https://www.francetvinfo.fr/titres.rss
+
+# Germany (German)
+https://www.tagesschau.de/xml/rss2
+https://www.spiegel.de/schlagzeilen/index.rss
+https://rss.dw.com/xml/rss-de-all
+https://www.faz.net/rss/aktuell/
+https://www.handelsblatt.com/contentexport/feed/schlagzeilen
+
+# Spain (Spanish)
+https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+https://www.elmundo.es/rss/portada.xml
+https://www.lavanguardia.com/rss/home.xml
+
+# Italy (Italian)
+https://www.ansa.it/sito/ansait_rss.xml
+https://www.repubblica.it/rss/homepage/rss2.0.xml
+https://www.corriere.it/rss/homepage.xml
+
+# Netherlands (Dutch)
+https://www.nu.nl/rss
+https://www.nrc.nl/rss/
+https://feeds.nos.nl/nosnieuwsalgemeen
+
+# Poland (Polish)
+https://www.pap.pl/rss/archiwum.xml
+https://www.polsatnews.pl/rss/wszystkie.xml
+https://www.rmf24.pl/fakty/polska/feed
